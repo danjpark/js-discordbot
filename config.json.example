@@ -1,3 +1,4 @@
 {
   "botToken" : "BOT_TOKEN_HERE"
+  "prefix" : "$" 
 }
