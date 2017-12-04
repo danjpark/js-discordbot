@@ -28,9 +28,15 @@ bot.on('message', async message => {
   let args = messageArray.slice(1);
 
   if(command === `${CONFIG.prefix}crypto`){
-    cc.price(args[0], 'USD')
+
+    cc.topExchanges(args[0], 'USD', 3)
     .then(prices => {
-      message.channel.send(prices.USD);
+      let richData = new Discord.RichEmbed()
+        .setTitle(args[0])
+        .setDescription(prices)
+        .setTimestamp();
+
+      message.channel.sendEmbed(richData);
     })
     .catch(reason => {
       message.channel.send(reason);
@@ -40,10 +46,8 @@ bot.on('message', async message => {
 });
 
 bot.login(CONFIG.botToken);
-// console.log(CONFIG.botToken);
 
-function getCyrptoPrice() {
-
-
-  return
-}
+// TO DO:
+// figure out how to explicitally call exchange in cc.prices
+// use underscore to do it for each in list
+// figure out how to pass in default param (if nothing just pass in 2 for test and then 1)
