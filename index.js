@@ -1,6 +1,7 @@
 global.fetch = require('node-fetch');
 const Discord = require('discord.js');
 const cc = require('cryptocompare');
+const _ = require('underscore');
 const CONFIG = require('./config.json');
 
 // https://discord.js.org/#/docs/main/stable/typedef/ClientOptions
@@ -17,8 +18,6 @@ bot.on('ready', async () => {
 });
 
 bot.on('message', async message => {
-  console.log('starting')
-
   if(message.author.bot) return;
   if(message.channel.type === 'dm') return;
   if(!message.content.startsWith(CONFIG.prefix)) return;
@@ -29,19 +28,39 @@ bot.on('message', async message => {
 
   if(command === `${CONFIG.prefix}crypto`){
 
-    cc.topExchanges(args[0], 'USD', 3)
-    .then(prices => {
-      let richData = new Discord.RichEmbed()
-        .setTitle(args[0])
-        .setDescription(prices)
-        .setTimestamp();
+    const topExchanges = _.map(await cc.topExchanges(args[0], 'USD', 4),
+                         item => {return item.exchange;});
 
-      message.channel.sendEmbed(richData);
-    })
-    .catch(reason => {
-      message.channel.send(reason);
-      console.log(reason);
-    })
+    let promArray = [];
+    _.each(topExchanges, exchange => {
+      promArray.push(cc.price(args[0],'USD',{exchanges:exchange}));
+    });
+
+    const topPrices = await Promise.all(promArray);
+
+    const cleanResult = _.map(_.zip(topExchanges, topPrices), exchPrice => {
+      // return(exchPrice[0] + " : " + exchPrice[1].USD.toFixed(2).toString());
+      return {exchange: exchPrice[0], price: exchPrice[1].USD};
+    });
+
+
+    //_.zip(topExchanges, topPrices)
+
+    // [ [ 'Coinbase', { USD: 11395 } ],
+    // [ 'Bitfinex', { USD: 11280 } ],
+    // [ 'Bitstamp', { USD: 11337.36 } ],
+    // [ 'Gemini', { USD: 11402.08 } ] ]
+
+
+    
+    // let richData = new Discord.RichEmbed()
+    //   .setTitle(args[0])
+    //   .setDescription(exchanges[0].exchange)
+    //   .setTimestamp();
+    //
+    // message.channel.sendEmbed(richData);
+
+
   }
 });
 
