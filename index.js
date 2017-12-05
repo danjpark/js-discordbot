@@ -28,22 +28,25 @@ bot.on('message', async message => {
     numExchanges = 3
   ] = message.content.split(' ');
 
+  console.log(command, coin, target, numExchanges);
+
   if(command === `${CONFIG.prefix}crypto`){
 
     try {
-      const topExchanges = await cc.topExchanges(coin, target, numExchanges)
-          .map(item => item.exchange);
+      const topExchanges = (await cc.topExchanges(coin, target, numExchanges))
+                .map(item => item.exchange);
 
       const promises = topExchanges.map(async exchange => {
-        const price = await cc.price(coin, target, {exchanges: exchange})
-        return `${exchange}: ${price[target]}`
+        const price = await cc.price(coin, target, {exchanges: exchange});
+        return `${exchange}: ${price[target]}`;
       })
 
-      const result = await Promise.all(promises).join('\n')
+      const result = (await Promise.all(promises)).join('\n')
 
+      console.log(result);
       let richData = new Discord.RichEmbed()
-        .setTitle(args[0])
-        .setDescription(retString)
+        .setTitle(coin)
+        .setDescription(result)
         .setTimestamp();
 
       message.channel.send(richData);
