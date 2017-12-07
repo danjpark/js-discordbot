@@ -1,11 +1,12 @@
 const { lookup } = require('./yahoo-stocks');
 
-dan = lookup('AA').then(
-  (data) => {console.log(data);},
-  (err) => {
-    console.log(err);
-    console.log('##');
-  }
+dan = lookup('AAA').then(
+    (data) => {
+        console.log('test.js data comes thru!');
+        console.log(data); // need to look at symbol and currentpx
+    },
+    (err) => {
+        console.log('test.js err');
+        console.log(err);
+    }
 )
-.catch((err)=>{
-  console.log('######');})
