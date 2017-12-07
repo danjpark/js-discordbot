@@ -55,6 +55,8 @@ bot.on('message', async message => {
     }
 
 
+  } else if (command === `${CONFIG.prefix}stock`){
+    message.channel.send('stock!');
   }
 });
 
