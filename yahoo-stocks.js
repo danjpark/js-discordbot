@@ -23,16 +23,15 @@ const getJson = (url) => new Promise((resolve, reject) => {
 });
 
 const lookup = (symbol) => new Promise((resolve, reject) => {
+  reject('dan');
     Promise.all([
             getJson(`https://autoc.finance.yahoo.com/autoc?query=${symbol}&region=1&lang=en`),
             getJson(`https://query1.finance.yahoo.com/v10/finance/quoteSummary/${symbol}?&modules=summaryProfile,financialData`),
         ])
         .then((responses) => {
-            console.log(responses.Result);
-            if (!responses[0].ResultSet.Result.length || responses[0]) { //OR the first in Results[0].symbol != symbol
-                console.log('### inside');
-                reject(true);
-                return;
+            if (!responses[0].ResultSet.Result.length
+                || responses[0].ResultSet.Result[0].symbol != symbol) {
+                reject('Ticker does not exist.');
             }
             const financialData = responses[1].quoteSummary.result[0].financialData;
             resolve({
@@ -47,11 +46,13 @@ const lookup = (symbol) => new Promise((resolve, reject) => {
             });
         })
         .catch((reject) => {
-          console.log(reject);
+          // return reject;
+          // not sure what to return here for now...
+          console.log('does it go here?');
+          return reject;
         });
 });
 
-lookup('aa')
-.then(response => {
-  console.log(response);
-})
+module.exports = {
+  lookup
+};
