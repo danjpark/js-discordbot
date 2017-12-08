@@ -1,6 +1,7 @@
 global.fetch = require('node-fetch');
 const Discord = require('discord.js');
 const cc = require('cryptocompare');
+const { lookup } = require('./yahoo-stocks');
 const CONFIG = require('./config.json');
 
 const bot = new Discord.Client({disableEveryone : true});
@@ -21,18 +22,13 @@ bot.on('message', async message => {
     if(message.channel.name != 'crypto') return;
     if(!message.content.startsWith(CONFIG.prefix)) return;
 
-    const [
-        command,
-        symbol = 'BTC',
-        target = 'USD',
-        numExchanges = 3
-    ] = message.content.split(' ')
-        .map((eachString => {return eachString.toUpperCase()}));
+    const coinList = await cc.coinList();
+    const symbol = message.content.replace('$','').toUpperCase();
+    const target = 'USD';
+    const numExchanges = 3;
 
-    console.log(command, symbol, target, numExchanges);
-
-    if(command === `${CONFIG.prefix}CRYPTO`){
-
+    if(Object.keys(coinList.Data).includes(symbol)) {
+        console.log('crypto! ' + symbol);
         try {
             const topExchanges = (await cc.topExchanges(symbol, target, numExchanges))
                 .map(item => item.exchange);
@@ -56,8 +52,27 @@ bot.on('message', async message => {
         }
 
 
-    } else if (command === `${CONFIG.prefix}STOCK`){
-        message.channel.send('stock!');
+    } else {
+        try {
+            const stockquote = await lookup(symbol);
+            console.log(stockquote);
+
+            let richData = new Discord.RichEmbed()
+                .setTitle(symbol)
+                .setDescription(symbol + ': ' + stockquote.currentPrice);
+
+            message.channel.send(richData);
+        } catch(e){
+            console.log(e);
+        }
+            // (data) => {
+            //     console.log('test.js data comes thru!');
+            //     console.log(data); // need to look at symbol and currentpx
+            // },
+            // (err) => {
+            //     console.log('test.js err');
+            //     console.log(err);
+            // }
     }
 });
 

@@ -1,12 +1,13 @@
-const { lookup } = require('./yahoo-stocks');
+global.fetch = require('node-fetch');
+const cc = require('cryptocompare');
 
-dan = lookup('AAA').then(
-    (data) => {
-        console.log('test.js data comes thru!');
-        console.log(data); // need to look at symbol and currentpx
-    },
-    (err) => {
-        console.log('test.js err');
-        console.log(err);
-    }
-)
+let dan = cc.coinList()
+    .then(
+        result => {
+            console.log(result);
+            console.log(Object.keys(result.Data));
+        },
+        error => {
+            console.log(error);
+        }
+    );
