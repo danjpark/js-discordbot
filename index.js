@@ -63,7 +63,7 @@ bot.on('message', async message => {
 
             message.channel.send(richData);
         } catch(e){
-            console.log(e);
+            message.channel.send(e);
         }
             // (data) => {
             //     console.log('test.js data comes thru!');
