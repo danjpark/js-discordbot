@@ -39,41 +39,36 @@ bot.on('message', async message => {
             })
 
             const result = (await Promise.all(promises)).join('\n')
+            message.channel.send(symbol + "\n" + result);
 
-            console.log(result);
-            let richData = new Discord.RichEmbed()
-                .setTitle(symbol)
-                .setDescription(result)
-                .setTimestamp();
-
-            message.channel.send(richData);
         } catch(e) {
             message.channel.send(e);
         }
-
-
     } else {
         try {
             const stockquote = await lookup(symbol);
             console.log(stockquote);
 
-            let richData = new Discord.RichEmbed()
-                .setTitle(symbol)
-                .setDescription(symbol + ': ' + stockquote.currentPrice);
-
-            message.channel.send(richData);
+            message.channel.send(symbol + ': ' + stockquote.currentPrice);
         } catch(e){
             message.channel.send(e);
         }
-            // (data) => {
-            //     console.log('test.js data comes thru!');
-            //     console.log(data); // need to look at symbol and currentpx
-            // },
-            // (err) => {
-            //     console.log('test.js err');
-            //     console.log(err);
-            // }
     }
 });
+
+bot.on('message', async message =>{
+    if(message.author.bot) return;
+    if(message.channel.type === 'dm') return;
+    if(message.channel.name != 'crypto') return;
+
+    if(message.content === 'dandandan'){
+        let repeat = setInterval(async () => {
+            let prices = await cc.priceMulti(['BTC', 'LTC'], 'USD');
+            console.log((prices.BTC.USD / prices.LTC.USD).toFixed(2));
+
+        }, 10 * 1000);
+    }
+});
+
 
 bot.login(CONFIG.botToken);
