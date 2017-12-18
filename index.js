@@ -49,6 +49,7 @@ bot.on('message', async message => {
             const stockquote = await lookup(symbol);
             console.log(stockquote);
 
+
             message.channel.send(symbol + ': ' + stockquote.currentPrice);
         } catch(e){
             message.channel.send(e);
