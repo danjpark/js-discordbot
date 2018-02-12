@@ -8,7 +8,7 @@ const get = (url) => new Promise((resolve, reject) => {
         });
         res.on('end', () => {
             resolve(data);
-        });
+        }); 
     });
     req.on('error', (e) => {
         reject(e);
@@ -43,7 +43,7 @@ const lookup = (symbol) => new Promise((resolve, reject) => {
             },
             (reason) => {
                 console.log('danpark is awseome');
-                // dont quiest understand when this gets 
+                // dont quiest understand when this gets
             }
         )
         .catch((reject) => {
